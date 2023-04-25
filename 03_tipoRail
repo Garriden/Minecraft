@@ -1,0 +1,71 @@
+
+ 
+ 
+ # Cuando iniciamos el programa, el agente se teleporta a nuestro lado
+agent.teleport_to_player()
+ 
+def rellenarBloques():
+    agent.set_item(RAIL, 64, 1)
+    agent.set_item(POWERED_RAIL, 64, 2)
+    agent.set_item(STONE, 64, 3)
+    agent.set_item(REDSTONE_BLOCK, 64, 4)
+ 
+ 
+def construirMontanaRusa(numeroRailes, orientacion, tipoRail):
+
+    rellenarBloques()
+    
+    numeroRailesConstruidos = 0
+    
+       
+    ############################################
+    # 2. Orientacion
+    ############################################
+    orientacionAgente = CompassDirection.SOUTH
+    
+    if orientacion == 1:
+        orientacionAgente=CompassDirection.SOUTH
+ 
+    elif orientacion == 2:
+        orientacionAgente=CompassDirection.WEST
+ 
+    elif orientacion == 3:
+        orientacionAgente=CompassDirection.EAST
+        
+    elif orientacion == 4:
+        orientacionAgente=CompassDirection.NORTH
+
+    agent.teleport(agent.get_position(),orientacionAgente)
+    
+    ############################################
+
+    agent.set_assist(PLACE_ON_MOVE, True)
+    agent.set_assist(DESTROY_OBSTACLES, True)
+    
+    while numeroRailesConstruidos < numeroRailes:
+
+        if agent.detect(AgentDetection.BLOCK, UP) or agent.detect(AgentDetection.BLOCK, FORWARD):
+            agent.destroy(UP)
+            
+        elif agent.inspect(AgentInspection.BLOCK, DOWN) == 0 or agent.inspect(AgentInspection.BLOCK, DOWN) == 9:
+            if tipoRail == 1:
+                agent.set_slot(3) # Piedra
+            else:
+                agent.set_slot(4) # Redstone
+            agent.place(DOWN)
+            
+        else:
+            ############################################
+            # 3. Tipo de rail
+            ############################################
+            if tipoRail == 1:
+                agent.set_slot(1)
+            else:
+                agent.set_slot(2)
+                
+            agent.move(FORWARD, 1)
+            
+            numeroRailesConstruidos += 1
+ 
+    player.say("Construccion terminada!")
+player.on_chat("b",construirMontanaRusa)
